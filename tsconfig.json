@@ -20,7 +20,6 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.vue",
-    "src/components/MyPagination.vue",
     "node_modules/vite-plugin-pwa/client.d.ts",
   ],
   "references": [{ "path": "./tsconfig.node.json" }]

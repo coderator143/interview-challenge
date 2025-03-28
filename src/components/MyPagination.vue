@@ -1,11 +1,11 @@
 <template>
     <div>
         <div class="pagination-row">
-            <button class = "pagination-button" > Previous </button>
+            <button class = "pagination-button" @click="currentPage > 1 && loadPosts(currentPage - 1)"> Previous </button>
             <span v-for="(item, index) in new Array(numPages)" :key="index">
                 <button @click = "loadPosts(index+1)" class = "pagination-button" >{{ index + 1 }}</button>
             </span>
-            <button class = "pagination-button" > Next </button>
+            <button class = "pagination-button" @click="currentPage < numPages && loadPosts(currentPage + 1)"> Next </button>
         </div>
         <slot />
     </div>
@@ -14,7 +14,8 @@
 <script setup>
     defineProps({
         loadPosts: Function,
-        numPages: Number
+        numPages: Number,
+        currentPage: Number
     });
 </script>
 
