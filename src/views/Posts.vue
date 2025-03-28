@@ -1,28 +1,39 @@
 <script lang="ts" setup>
   import { getPosts, Post } from '@/api/api';
   import { onBeforeMount, ref } from 'vue';
+  import MyPagination from '@/components/MyPagination.vue'
 
   const posts = ref<Post[]>();
+  let pagePosts = ref<Post[]>();
+  let numPages = ref(0); // reactive state
 
   onBeforeMount(() => loadPosts());
 
-  async function loadPosts() {
+  async function loadPosts(page = 1) {
     posts.value = (await getPosts()).posts;
+    numPages.value = Math.ceil(posts?.value?.length/5);
+  }
+
+  function loadPostsPerPage(page = 1) {
+    let postStartIndex = page*5-5, postEndIndex = page*5
+    pagePosts.value = posts?.value?.slice(postStartIndex, postEndIndex)
   }
 </script>
 
 <template>
   <h1>Posts list</h1>
-  <RouterLink
-    class="post"
-    v-for="(post, index) of posts"
-    :to="{ name: 'post', params: { postId: post.id } }"
-    :key="index"
-  >
-    <div class="post__id">#{{ post.id }}</div>
-    <div class="post__title">{{ post.title }}</div>
-    <div>{{ post.body }}</div>
-  </RouterLink>
+  <MyPagination :loadPosts = "loadPostsPerPage" :numPages="numPages">
+    <RouterLink
+      class="post"
+      v-for="(post, index) of pagePosts"
+      :to="{ name: 'post', params: { postId: post.id } }"
+      :key="index"
+    >
+      <div class="post__id">#{{ post.id }}</div>
+      <div class="post__title">{{ post.title }}</div>
+      <div>{{ post.body }}</div>
+    </RouterLink>
+  </MyPagination>
 </template>
 
 <style scoped>
