@@ -2,21 +2,34 @@
   import { getPosts, Post } from '@/api/api';
   import { onBeforeMount, ref } from 'vue';
   import MyPagination from '@/components/MyPagination.vue'
+  import { useRoute } from 'vue-router';
 
+  const route = useRoute()
   const posts = ref<Post[]>();
   let pagePosts = ref<Post[]>();
   let numPages = ref(0); // reactive state
-  let currentPage = ref(0)
+  let currentPage = ref(1)
 
   onBeforeMount(() => loadPosts());
 
-  async function loadPosts(page = 1) {
+  async function loadPosts() {
+    /* to check if the page is loaded for the first time or
+       after the clicking the back button */
+    let pageFromRoute = route.params.currentPage
+    if(pageFromRoute !== undefined) {
+      currentPage.value = Number(pageFromRoute)
+    }
+
+    // getting all posts and calculating number of pages
     posts.value = (await getPosts()).posts;
     numPages.value = Math.ceil(posts?.value?.length/5);
 
-    loadPostsPerPage();
+    // loading posts on current page
+    loadPostsPerPage(currentPage.value);
   }
 
+  /* seperate function being used in pagination component
+     to avoid api calling everytime a page changes */
   function loadPostsPerPage(page = 1) {
     let postStartIndex = page*5-5, postEndIndex = page*5
     pagePosts.value = posts?.value?.slice(postStartIndex, postEndIndex)
@@ -30,7 +43,7 @@
     <RouterLink
       class="post"
       v-for="(post, index) of pagePosts"
-      :to="{ name: 'post', params: { postId: post.id } }"
+      :to="{ name: 'post', params: { postId: post.id, currentPage: currentPage } }"
       :key="index"
     >
       <div class="post__id">#{{ post.id }}</div>

@@ -1,4 +1,4 @@
-<template>
+<template> 
     <div>
         <div class="pagination-row">
             <button class = "pagination-button" @click="currentPage > 1 && loadPosts(currentPage - 1)"> Previous </button>
@@ -8,6 +8,8 @@
             <button class = "pagination-button" @click="currentPage < numPages && loadPosts(currentPage + 1)"> Next </button>
         </div>
         <slot />
+
+        <p>Current Page: {{ currentPage }}</p>
     </div>
 </template>
 

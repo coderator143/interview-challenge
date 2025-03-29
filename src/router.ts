@@ -4,6 +4,7 @@ import Posts from '@/views/Posts.vue';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
+    name: 'posts',
     component: Posts,
   },
   {

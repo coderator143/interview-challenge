@@ -5,6 +5,7 @@
 
   const route = useRoute();
   const postId = computed(() => +route.params.postId as Post['id']);
+  const currentPage = route.params.currentPage
   const post = ref<Post>();
 
   onBeforeMount(() => loadPost());
@@ -16,7 +17,7 @@
 
 <template>
   <h1>Post {{ postId }}</h1>
-  <RouterLink class="back" to="/">Back</RouterLink>
+  <RouterLink class="back" :to="{ name: 'posts', params: { currentPage: currentPage } }">Back</RouterLink>
   <template v-if="post">
     <h3>{{ post.title }}</h3>
     <div>{{ post.body }}</div>
