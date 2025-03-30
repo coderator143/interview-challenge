@@ -35,7 +35,7 @@
                 </button>
             </span>
 
-            <span> ... </span>
+            <span v-if="middleArray.length > 0"> ... </span>
 
             <span v-for="(item, index) in rightArray" :key="index">
                 <button 
@@ -67,6 +67,10 @@
         currentPage: Number
     });
 
+    /* pagination component displays the correct page if 
+       you are landing for the first or after viewing a post */
+    onBeforeMount(() => calculateSpan(props.currentPage))
+
     let size = props.numPages // total number of pages
     let leftArray = ref([1, 2, 3]) // intial left section showing first 3 pages
     let middleArray = ref([])  // don't show the middle section in the pagination component initially
@@ -94,8 +98,8 @@
 
             /* the left and right sections contain the first two and last two pages 
                respectively while we are scrolling the pages in the middle section */
-            leftArray.value = [1, 2]
-            rightArray.value = [size-1, size]
+            leftArray.value = [1, 2, 3]
+            rightArray.value = [size-2, size-1, size]
         } else if (selectedPage >= size-4) { // right array manipulation (max size 6)
             /* keeping the last page from the middle section to restore it
                also shrinking this section when user clicks on a page keeping minimum size of 3 */
