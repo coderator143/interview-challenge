@@ -22,6 +22,7 @@
 
     // getting all posts and calculating number of pages
     posts.value = (await getPosts()).posts;
+    posts.value = [...posts.value, ...posts.value, ...posts.value]
     numPages.value = Math.ceil(posts?.value?.length/5);
 
     // loading posts on current page
@@ -39,7 +40,11 @@
 
 <template>
   <h1>Posts list</h1>
-  <MyPagination :loadPosts = "loadPostsPerPage" :numPages="numPages" :currentPage="currentPage">
+  <MyPagination 
+    v-if="numPages > 0"
+    :loadPosts = "loadPostsPerPage"
+    :numPages="numPages" 
+    :currentPage="currentPage">
     <RouterLink
       class="post"
       v-for="(post, index) of pagePosts"
