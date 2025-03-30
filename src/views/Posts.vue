@@ -9,6 +9,7 @@ const posts = ref<Post[]>();
 let pagePosts = ref<Post[]>();
 let numPages = ref(0); // reactive state
 let currentPage = ref(1)
+let numPosts = 7
 
 onBeforeMount(() => loadPosts());
 
@@ -23,7 +24,7 @@ async function loadPosts() {
   // getting all posts and calculating number of pages
   posts.value = (await getPosts()).posts;
   posts.value = [...posts.value, ...posts.value, ...posts.value]
-  numPages.value = Math.ceil(posts?.value?.length / 5);
+  numPages.value = Math.ceil(posts?.value?.length / numPosts);
 
   // loading posts on current page
   loadPostsPerPage(currentPage.value);
@@ -32,7 +33,7 @@ async function loadPosts() {
 /* seperate function being used in pagination component
    to avoid api calling everytime a page changes */
 function loadPostsPerPage(page = 1) {
-  let postStartIndex = page * 5 - 5, postEndIndex = page * 5
+  let postStartIndex = page * numPosts - numPosts, postEndIndex = page * numPosts
   pagePosts.value = posts?.value?.slice(postStartIndex, postEndIndex)
   currentPage.value = page
 }
