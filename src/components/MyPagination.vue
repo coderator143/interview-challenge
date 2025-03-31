@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="pagination-row">
+        <div v-if="size > 1" class="pagination-row">
             <button class="pagination-button" @click="currentPage > 1 && onClickHandler(currentPage - 1)">
                 Previous
             </button>
@@ -11,7 +11,7 @@
                 </button>
             </span>
 
-            <span> ... </span>
+            <span v-if="size > 6 && !isOverlapped"> ... </span>
 
             <span v-for="(item, index) in middleArray" :key="index">
                 <button @click="onClickHandler(item)" class="pagination-button"
@@ -48,43 +48,80 @@ const props = defineProps({
 
 /* pagination component displays the correct page if 
    you are landing for the first or after viewing a post */
-onBeforeMount(() => calculateSpan(props.currentPage))
+onBeforeMount(() => calculateSpan(props.currentPage));
 
 let size = props.numPages // total number of pages
 let leftArray = ref([1, 2, 3]) // intial left section showing first 3 pages
 let middleArray = ref([])  // don't show the middle section in the pagination component initially
 let rightArray = ref([size - 2, size - 1, size]) // initial right section showing last 3 pages
+let isOverlapped = ref(false)
 
 // Change the pagination component on clicking different pages
 const calculateSpan = (selectedPage) => {
     let array = [];
 
+    // base case for size < 6 so we don't render the middle and right section
+    if (size <= 6) {
+        console.log('in base')
+        for (let x = 1; x <= size; x++) {
+            array.push(x);
+        }
+        leftArray.value = array;
+        middleArray.value = [];
+        rightArray.value = [];
+        return;
+    }
+
     // left array manipulation
     if (selectedPage <= 4) {
         // show the next two pages as well in the left section on clicking a page for a max of 6
         for (let x = 1; x <= selectedPage + 2; x++) {
-            array.push(x)
+            array.push(x);
         }
+
+        // if left section is overlapping with the right section, create one single big left array
+        if (rightArray.value[0] - array[array.length - 1] <= 1) {
+            array = []
+            for (let x = 1; x <= size; x++) {
+                array.push(x);
+            }
+            rightArray.value = [];
+            isOverlapped.value = true
+        }
+
         leftArray.value = array;
-        middleArray.value = []
+        middleArray.value = [];
     } else if (selectedPage > 4 && selectedPage < size - 4) { // middle array manipulation
         /* keep one page from the left section so as to restore 
         the left section if user clicks page 4 */
         for (let x = selectedPage - 1; x <= selectedPage + 1; x++) {
-            array.push(x)
+            array.push(x);
         }
-        middleArray.value = array
+        middleArray.value = array;
 
         /* the left and right sections contain the first two and last two pages 
            respectively while we are scrolling the pages in the middle section */
-        leftArray.value = [1, 2, 3]
-        rightArray.value = [size - 2, size - 1, size]
+        leftArray.value = [1, 2];
+        rightArray.value = [size - 1, size];
     } else if (selectedPage >= size - 4) { // right array manipulation (max size 6)
         /* keeping the last page from the middle section to restore it
            also shrinking this section when user clicks on a page keeping minimum size of 3 */
-        for (let x = selectedPage <= size - 2 ? selectedPage - 1 : size - 2; x <= size; x++) {
+        for (let x = selectedPage <= size - 1 ? selectedPage - 1 : size - 1; x <= size; x++) {
             array.push(x);
         }
+
+        // if left section is overlapping with the right section, create one single big left array
+        if (array[0] - leftArray.value[leftArray.value.length - 1] <= 1) {
+            array = []
+            for (let x = 1; x <= size; x++) {
+                array.push(x);
+            }
+            leftArray.value = array;
+            rightArray.value = [];
+            isOverlapped.value = true;
+            return;
+        }
+
         rightArray.value = array
         middleArray.value = [] // no need of middle section when right section is active
     }
@@ -92,8 +129,12 @@ const calculateSpan = (selectedPage) => {
 
 // function to perform 2 tasks - load the correct page and change the pagination component
 const onClickHandler = (item) => {
-    props.loadPosts(item)
-    calculateSpan(item)
+    props.loadPosts(item);
+
+    // if left and right sections overlap, no need to calculate different spans again
+    if (!isOverlapped.value) {
+        calculateSpan(item);
+    }
 }
 </script>
 
