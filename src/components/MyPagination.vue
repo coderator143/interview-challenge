@@ -62,7 +62,6 @@ const calculateSpan = (selectedPage) => {
 
     // base case for size < 6 so we don't render the middle and right section
     if (size <= 6) {
-        console.log('in base')
         for (let x = 1; x <= size; x++) {
             array.push(x);
         }
