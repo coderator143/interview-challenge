@@ -9,7 +9,7 @@ const posts = ref<Post[]>();
 let pagePosts = ref<Post[]>();
 let numPages = ref(0); // reactive state
 let currentPage = ref(1)
-let numPosts = 3
+let numPosts = 6
 
 onBeforeMount(() => loadPosts());
 
@@ -23,7 +23,7 @@ async function loadPosts() {
 
   // getting all posts and calculating number of pages
   posts.value = (await getPosts()).posts;
-  posts.value = [...posts.value]
+  posts.value = [...posts.value, ...posts.value]
   numPages.value = Math.ceil(posts?.value?.length / numPosts);
 
   // loading posts on current page
