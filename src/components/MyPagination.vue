@@ -94,8 +94,7 @@ const calculateSpan = (selectedPage) => {
     } else if (selectedPage > size - 5) { // right array manipulation (max size 7)
         leftArray.value = [1, 2] // reset the left section
 
-        /* keeping the last 2 pages from the middle section to restore it
-           also shrinking this section when user clicks on a page keeping minimum size of 3 */
+        // show the previous 2 pages to navigate to middle section
         for (let x = selectedPage-2; x <= size; x++) array.push(x);
 
         // if left section is overlapping with the right section, create one single big left array

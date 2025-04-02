@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router';
 const route = useRoute()
 const posts = ref<Post[]>();
 let pagePosts = ref<Post[]>();
-let numPages = ref(0); // reactive state
+let numPages = ref(0);
 let currentPage = ref(1)
 let numPosts = 6
 
