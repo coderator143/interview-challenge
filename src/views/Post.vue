@@ -7,15 +7,18 @@ const route = useRoute();
 const postId = computed(() => +route.params.postId as Post['id']);
 const currentPage = route.params.currentPage
 const post = ref<Post>();
+const isLoading = ref<boolean>(true)
 
 onBeforeMount(() => loadPost());
 
 async function loadPost() {
   post.value = await getPost(postId.value);
+  isLoading.value = false;
 }
 </script>
 
 <template>
+  <h1 v-if="isLoading">Loading Post...</h1>
   <h1>Post {{ postId }}</h1>
   <RouterLink class="back" :to="{ name: 'posts', params: { currentPage: currentPage } }">Back</RouterLink>
   <template v-if="post">

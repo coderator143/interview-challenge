@@ -5,13 +5,11 @@ import MyPagination from '@/components/MyPagination.vue'
 import { useRoute } from 'vue-router';
 
 const route = useRoute()
-const posts = ref<Post[]>();
-const pagePosts = ref<Post[]>();
-const numPages = ref(0);
-const currentPage = ref(1)
-let numPosts = 6
+const posts = ref<Post[]>(), pagePosts = ref<Post[]>();
+const numPages = ref(0), currentPage = ref(1)
 const apiError = ref<string>('')
 const isLoading = ref<boolean>(true)
+let numPosts = 6
 
 onBeforeMount(() => loadPosts());
 
