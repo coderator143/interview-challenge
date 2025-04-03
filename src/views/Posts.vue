@@ -6,11 +6,12 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute()
 const posts = ref<Post[]>();
-let pagePosts = ref<Post[]>();
-let numPages = ref(0);
-let currentPage = ref(1)
+const pagePosts = ref<Post[]>();
+const numPages = ref(0);
+const currentPage = ref(1)
 let numPosts = 6
 const apiError = ref<string>('')
+const isLoading = ref<boolean>(true)
 
 onBeforeMount(() => loadPosts());
 
@@ -27,6 +28,8 @@ async function loadPosts() {
     posts.value = (await getPosts()).posts;
     posts.value = [...posts.value, ...posts.value]
     numPages.value = Math.ceil(posts?.value?.length / numPosts);
+
+    isLoading.value = false; // stop loading when posts are fetched
 
     // loading posts on current page
     loadPostsPerPage(currentPage.value);
@@ -46,6 +49,8 @@ function loadPostsPerPage(page = 1) {
 </script>
 
 <template>
+  <h1 v-if="isLoading">Loading posts...</h1>
+
   <h1 v-if="numPages > 0">Posts list</h1>
 
   <MyPagination v-if="numPages > 0" :loadPosts="loadPostsPerPage" :numPages="numPages" :currentPage="currentPage">
@@ -57,7 +62,7 @@ function loadPostsPerPage(page = 1) {
     </RouterLink>
   </MyPagination>
 
-  <h1 v-if="numPages === 0 && apiError.length === 0">No posts to display</h1>
+  <h1 v-if="numPages === 0 && apiError.length === 0 && !isLoading">No posts to display</h1>
 
   <h1 v-if="apiError.length > 0">{{ apiError }}</h1>
 </template>
