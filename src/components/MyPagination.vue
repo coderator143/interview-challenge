@@ -51,8 +51,8 @@ const props = defineProps<{
 onBeforeMount(() => calculateSpan(props.currentPage));
 
 let size = props.numPages // total number of pages
-let leftArray = ref([]), middleArray = ref([]), rightArray = ref([]);
-let isOverlapped = ref(false)
+const leftArray = ref<number[]>([]), middleArray = ref<number[]>([]), rightArray = ref<number[]>([]);
+const isOverlapped = ref(false)
 
 // Change the pagination component on clicking different pages
 const calculateSpan = (selectedPage: number) => {

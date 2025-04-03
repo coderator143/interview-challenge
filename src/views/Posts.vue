@@ -9,25 +9,31 @@ const posts = ref<Post[]>();
 let pagePosts = ref<Post[]>();
 let numPages = ref(0);
 let currentPage = ref(1)
-let numPosts = 5
+let numPosts = 6
+const apiError = ref<string>('')
 
 onBeforeMount(() => loadPosts());
 
 async function loadPosts() {
-  /* to check if the page is loaded for the first time or
+  try {
+    /* to check if the page is loaded for the first time or
      after the clicking the back button */
-  let pageFromRoute = route.params.currentPage
-  if (pageFromRoute !== undefined) {
-    currentPage.value = Number(pageFromRoute)
+    let pageFromRoute = route.params.currentPage
+    if (pageFromRoute !== undefined) {
+      currentPage.value = Number(pageFromRoute)
+    }
+
+    // getting all posts and calculating number of pages
+    posts.value = (await getPosts()).posts;
+    posts.value = [...posts.value, ...posts.value]
+    numPages.value = Math.ceil(posts?.value?.length / numPosts);
+
+    // loading posts on current page
+    loadPostsPerPage(currentPage.value);
+  } catch (error) {
+    console.error("Failed to load posts: ", error);
+    apiError.value = "Something went wrong! Please try again";
   }
-
-  // getting all posts and calculating number of pages
-  posts.value = (await getPosts()).posts;
-  posts.value = [...posts.value, ...posts.value]
-  numPages.value = Math.ceil(posts?.value?.length / numPosts);
-
-  // loading posts on current page
-  loadPostsPerPage(currentPage.value);
 }
 
 /* seperate function being used in pagination component
@@ -40,7 +46,8 @@ function loadPostsPerPage(page = 1) {
 </script>
 
 <template>
-  <h1>Posts list</h1>
+  <h1 v-if="numPages > 0">Posts list</h1>
+
   <MyPagination v-if="numPages > 0" :loadPosts="loadPostsPerPage" :numPages="numPages" :currentPage="currentPage">
     <RouterLink class="post" v-for="(post, index) of pagePosts"
       :to="{ name: 'post', params: { postId: post.id, currentPage: currentPage } }" :key="index">
@@ -49,6 +56,10 @@ function loadPostsPerPage(page = 1) {
       <div>{{ post.body }}</div>
     </RouterLink>
   </MyPagination>
+
+  <h1 v-if="numPages === 0 && apiError.length === 0">No posts to display</h1>
+
+  <h1 v-if="apiError.length > 0">{{ apiError }}</h1>
 </template>
 
 <style scoped>
