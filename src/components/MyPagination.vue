@@ -40,11 +40,11 @@
 <script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue';
 
-const props = defineProps({
-    loadPosts: Function,
-    numPages: Number,
-    currentPage: Number
-});
+const props = defineProps<{
+    loadPosts: (page: number) => void;
+    numPages: number;
+    currentPage: number;
+}>();
 
 /* pagination component displays the correct page if 
    you are landing for the first time or after viewing a post */
@@ -55,7 +55,7 @@ let leftArray = ref([]), middleArray = ref([]), rightArray = ref([]);
 let isOverlapped = ref(false)
 
 // Change the pagination component on clicking different pages
-const calculateSpan = (selectedPage) => {
+const calculateSpan = (selectedPage: number) => {
     let array = [];
     if (selectedPage <= 5) { // left array manipulation
         rightArray.value = [size - 1, size]; // reset the right section
@@ -101,7 +101,7 @@ const calculateSpan = (selectedPage) => {
 };
 
 // function to perform 2 tasks - load the correct page and change the pagination component
-const onClickHandler = (item) => {
+const onClickHandler = (item: number) => {
     props.loadPosts(item);
 
     // if left and right sections overlap, no need to calculate different spans again

@@ -9,7 +9,7 @@ const posts = ref<Post[]>();
 let pagePosts = ref<Post[]>();
 let numPages = ref(0);
 let currentPage = ref(1)
-let numPosts = 9
+let numPosts = 5
 
 onBeforeMount(() => loadPosts());
 
