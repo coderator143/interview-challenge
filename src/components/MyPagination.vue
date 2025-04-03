@@ -11,7 +11,7 @@
                 </h1>
             </span>
 
-            <h3 class="dots" v-if="size > 2 && !isOverlapped">  ...  </h3>
+            <h3 class="dots" v-if="!isOverlapped"> ... </h3>
 
             <span v-for="(item, index) in middleArray" :key="index">
                 <h1 @click="onClickHandler(item)" class="pagination-button"
@@ -20,7 +20,7 @@
                 </h1>
             </span>
 
-            <h3 class="dots" v-if="middleArray.length > 0">  ...  </h3>
+            <h3 class="dots" v-if="middleArray.length > 0"> ... </h3>
 
             <span v-for="(item, index) in rightArray" :key="index">
                 <h1 @click="onClickHandler(item)" class="pagination-button"
@@ -37,7 +37,7 @@
     </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue';
 
 const props = defineProps({
@@ -51,35 +51,24 @@ const props = defineProps({
 onBeforeMount(() => calculateSpan(props.currentPage));
 
 let size = props.numPages // total number of pages
-let leftArray = ref([]), middleArray = ref([]), rightArray = ref([]); 
+let leftArray = ref([]), middleArray = ref([]), rightArray = ref([]);
 let isOverlapped = ref(false)
 
 // Change the pagination component on clicking different pages
 const calculateSpan = (selectedPage) => {
     let array = [];
-
-    // base case for size < 2 so we don't render the middle and right section
-    if (size <= 2) {
-        for (let x = 1; x <= size; x++) {
-            array.push(x);
-        }
-        leftArray.value = array;
-        middleArray.value = [];
-        rightArray.value = [];
-        return;
-    }
-
     if (selectedPage <= 5) { // left array manipulation
-        rightArray.value = [size-1, size]; // reset the right section
+        rightArray.value = [size - 1, size]; // reset the right section
 
         // show the next two pages in the left section to naviagate to middle section
         for (let x = 1; x <= selectedPage + 2; x++) array.push(x);
 
         // if left section is overlapping with the right section, create one single big left array
         if (rightArray.value[0] - array[array.length - 1] <= 1) {
-            array = rightArray.value = [];
+            array = [];
             for (let x = 1; x <= size; x++) array.push(x);
-            isOverlapped.value = true
+            isOverlapped.value = true;
+            rightArray.value = [];
         }
 
         leftArray.value = array;
@@ -91,15 +80,15 @@ const calculateSpan = (selectedPage) => {
         middleArray.value = array;
         leftArray.value = [1, 2]; // reset the left section
         rightArray.value = [size - 1, size]; // reset the right section
-    } else if (selectedPage > size - 5) { // right array manipulation (max size 7)
+    } else { // right array manipulation (max size 7)
         leftArray.value = [1, 2] // reset the left section
 
         // show the previous 2 pages to navigate to middle section
-        for (let x = selectedPage-2; x <= size; x++) array.push(x);
+        for (let x = selectedPage - 2; x <= size; x++) array.push(x);
 
         // if left section is overlapping with the right section, create one single big left array
         if (array[0] - leftArray.value[leftArray.value.length - 1] <= 1) {
-            array = rightArray.value = []
+            array = [];
             for (let x = 1; x <= size; x++) array.push(x);
             leftArray.value = array;
             isOverlapped.value = true;
